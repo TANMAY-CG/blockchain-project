@@ -45,14 +45,14 @@ export function createApp() {
         portalOtpVerify: '/api/portal/otp/verify',
       },
       ui: {
-        sealedPortalFile: 'open frontend/sealed-portal.html',
+        sealedPortalFile: 'open frontend/index.html',
         sealedProblems: 'http://localhost:4600',
       },
     })
   );
 
   app.get('/portal', (req: Request, res: Response) => {
-    const file = path.resolve(process.cwd(), '..', 'frontend', 'sealed-portal.html');
+    const file = path.resolve(process.cwd(), '..', 'frontend', 'index.html');
     return res.sendFile(file);
   });
 
