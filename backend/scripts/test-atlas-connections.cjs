@@ -39,12 +39,8 @@ async function testConnection(label, uri) {
 
 async function main() {
   const sealed = process.env.MONGODB_URI;
-  const snovia = process.env.MONGODB_URI_SNOVIA;
-
-  const a = await testConnection('Sealed (MONGODB_URI)', sealed);
-  const b = await testConnection('Snovia (MONGODB_URI_SNOVIA)', snovia);
-
-  if (!a || !b) process.exitCode = 1;
+  const ok = await testConnection('Sealed (MONGODB_URI)', sealed);
+  if (!ok) process.exitCode = 1;
 }
 
 main();
