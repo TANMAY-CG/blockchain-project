@@ -1,0 +1,40 @@
+{
+  "name": "sealed-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sealed backend and dev utilities",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "problems": "node problems-server.js",
+    "chain": "npx hardhat node",
+    "chain:compile": "npx hardhat compile",
+    "chain:deploy": "npx hardhat run scripts/deploy-warranty-registry.js --network localhost",
+    "chain:deploy:sepolia": "npx hardhat run scripts/deploy-warranty-registry.js --network sepolia"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "mongoose": "^8.23.0",
+    "nodemailer": "^8.0.4",
+    "pdfkit": "^0.18.0",
+    "qrcode": "^1.5.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/nodemailer": "^7.0.11",
+    "@types/pdfkit": "^0.17.5",
+    "@types/qrcode": "^1.5.6",
+    "hardhat": "^2.22.17",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^6.0.2"
+  }
+}

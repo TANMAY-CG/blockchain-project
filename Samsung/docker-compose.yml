@@ -1,0 +1,12 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: snovia-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - snovia_mongo_data:/data/db
+
+volumes:
+  snovia_mongo_data:
+

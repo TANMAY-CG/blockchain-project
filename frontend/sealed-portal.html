@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sealed Portal</title>
+    <style>
+      :root {
+        --bg: #020617;
+        --text-primary: rgba(255, 255, 255, 0.92);
+        --text-secondary: rgba(255, 255, 255, 0.66);
+        --text-muted: rgba(255, 255, 255, 0.45);
+        --border: rgba(255, 255, 255, 0.12);
+        --panel: rgba(255, 255, 255, 0.05);
+        --accent-purple: #6367FF;
+        --accent-indigo: #8494FF;
+        --accent-soft: #C9BEFF;
+        --accent-soft-pink: #FFDBFD;
+        --accent-pink: #FF52A0;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        color: var(--text-primary);
+        background:
+          radial-gradient(circle at 20% 30%, rgba(99, 103, 255, 0.2), transparent 42%),
+          radial-gradient(circle at 80% 70%, rgba(255, 82, 160, 0.18), transparent 42%),
+          var(--bg);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient( circle at 70% 10%, rgba(132, 148, 255, 0.22), transparent 34% );
+        filter: blur(24px);
+        z-index: 0;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: -12% -10% -12% -10%;
+        pointer-events: none;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 14% 18%, rgba(99, 103, 255, 0.36) 0%, rgba(99, 103, 255, 0) 35%),
+          radial-gradient(circle at 82% 24%, rgba(132, 148, 255, 0.3) 0%, rgba(132, 148, 255, 0) 33%),
+          radial-gradient(circle at 62% 78%, rgba(201, 190, 255, 0.32) 0%, rgba(201, 190, 255, 0) 36%),
+          radial-gradient(circle at 28% 82%, rgba(255, 82, 160, 0.24) 0%, rgba(255, 82, 160, 0) 31%);
+        filter: blur(6px);
+        animation: ambientOrbsDrift 9s ease-in-out infinite alternate;
+      }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px; position: relative; z-index: 1; }
+      .wrap::before {
+        content: "";
+        position: fixed;
+        inset: -8% -8% -8% -8%;
+        pointer-events: none;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 16% 68%, rgba(132, 148, 255, 0.3) 0%, rgba(132, 148, 255, 0) 28%),
+          radial-gradient(circle at 88% 70%, rgba(255, 219, 253, 0.24) 0%, rgba(255, 219, 253, 0) 25%);
+        filter: blur(8px);
+        animation: ambientOrbsDriftReverse 11s ease-in-out infinite alternate;
+      }
+      .glass {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 16px 48px rgba(2, 6, 23, 0.55);
+        transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+      }
+      .glass:hover {
+        transform: translateY(-2px);
+        border-color: rgba(132, 148, 255, 0.34);
+        box-shadow: 0 22px 62px rgba(2, 6, 23, 0.62);
+      }
+      .head { padding: 16px; margin-bottom: 12px; }
+      h1 { margin: 0; font-size: 24px; font-weight: 600; }
+      .sub { margin-top: 7px; color: var(--text-secondary); font-size: 13px; }
+      .box { padding: 16px; margin-bottom: 12px; }
+      .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+      .field { display: grid; gap: 6px; }
+      label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+      input {
+        width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px;
+        background: rgba(255,255,255,0.06) !important;
+        background-color: rgba(255,255,255,0.06) !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
+        box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+        -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+        transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+        color-scheme: dark;
+      }
+      #email,
+      #otp {
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 12px !important;
+        line-height: 44px !important;
+        box-sizing: border-box !important;
+        appearance: none;
+        border: 1px solid rgba(255,255,255,0.14) !important;
+        background: rgba(255,255,255,0.06) !important;
+        background-color: rgba(255,255,255,0.06) !important;
+        color: rgba(255,255,255,0.92) !important;
+        -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+        box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+        -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+      }
+      input:focus {
+        outline: none;
+        border-color: rgba(99, 103, 255, 0.62);
+        background: rgba(255,255,255,0.09);
+        box-shadow: 0 0 0 3px rgba(132, 148, 255, 0.2);
+      }
+      button {
+        height: 42px; border: none; border-radius: 12px; padding: 0 14px; color: #fff; font-weight: 600; cursor: pointer;
+        background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+        transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+      }
+      #requestOtpBtn,
+      #verifyBtn {
+        height: 44px !important;
+        min-height: 44px !important;
+        line-height: normal !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        min-width: 92px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      input:-webkit-autofill:active,
+      #email:-webkit-autofill,
+      #email:-webkit-autofill:hover,
+      #email:-webkit-autofill:focus,
+      #email:-webkit-autofill:active,
+      #otp:-webkit-autofill,
+      #otp:-webkit-autofill:hover,
+      #otp:-webkit-autofill:focus,
+      #otp:-webkit-autofill:active {
+        -webkit-text-fill-color: var(--text-primary) !important;
+        -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+        box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+        background-color: rgba(255,255,255,0.06) !important;
+        border: 1px solid var(--border) !important;
+        caret-color: rgba(255,255,255,0.92) !important;
+        transition: background-color 999999s ease-out 0s !important;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px rgba(236,72,153,0.36), 0 0 16px rgba(139,92,246,0.28);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      button:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+        filter: grayscale(0.15);
+      }
+      .status { margin-top: 8px; color: #fca5a5; font-size: 13px; }
+      .ok { color: #86efac; }
+      .list { display: grid; gap: 10px; }
+      .item {
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 16px;
+        padding: 14px;
+        background:
+          linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+          rgba(255,255,255,0.06);
+        box-shadow: 0 14px 36px rgba(2, 6, 23, 0.45);
+      }
+      .item:hover {
+        border-color: rgba(132, 148, 255, 0.44);
+        box-shadow: 0 18px 42px rgba(2, 6, 23, 0.58), 0 0 24px rgba(99,102,241,0.16);
+      }
+      .kv { display: grid; grid-template-columns: 130px 1fr; gap: 8px; font-size: 13px; padding: 4px 0; }
+      .k { color: var(--text-secondary); }
+      .actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+      .btn-soft {
+        border: 1px solid rgba(255,255,255,0.18);
+        padding: 9px 12px;
+        border-radius: 11px;
+        color: #f8fafc;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .02em;
+      }
+      .btn-soft[data-action="validate"] {
+        width: 100%;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(34,211,238,0.42), rgba(139,92,246,0.44));
+        box-shadow: 0 0 0 1px rgba(34,211,238,0.36) inset, 0 12px 30px rgba(59,130,246,0.28), 0 0 20px rgba(139,92,246,0.26);
+      }
+      .btn-soft:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 26px rgba(2,6,23,0.48);
+      }
+      .download-wrap {
+        margin-top: 10px;
+        display: grid;
+      }
+      .btn-download {
+        width: 100%;
+        background: linear-gradient(135deg, rgba(139,92,246,0.6), rgba(236,72,153,0.58));
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 14px 30px rgba(236,72,153,0.36), 0 0 20px rgba(139,92,246,0.3);
+      }
+      .verify-out { margin-top: 8px; font-size: 12px; color: var(--text-secondary); word-break: break-word; }
+      .verify-progress {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+      }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #8494FF;
+        box-shadow: 0 0 0 rgba(132,148,255,.8);
+        animation: pulse 1.2s infinite;
+      }
+      .shimmer {
+        position: relative;
+        overflow: hidden;
+      }
+      .shimmer::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -120%;
+        width: 120%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+        animation: sweep 1.6s infinite;
+      }
+      .id-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.05);
+        font-size: 11px;
+        color: rgba(255,255,255,0.75);
+        margin-bottom: 7px;
+      }
+      .result-ok { color: #86efac; }
+      .result-bad { color: #fca5a5; }
+      .flow-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        background: rgba(2,6,23,0.62);
+        backdrop-filter: blur(6px);
+      }
+      .flow-modal[hidden] { display: none; }
+      .flow-card {
+        width: min(440px, calc(100vw - 28px));
+        padding: 20px 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: linear-gradient(165deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+        box-shadow: 0 22px 62px rgba(2,6,23,0.72), 0 0 32px rgba(255,82,160,0.22);
+      }
+      .flow-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+      .flow-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .flow-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #fff;
+        font-size: 16px;
+        line-height: 1;
+      }
+      .flow-stage {
+        font-size: 13px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .flow-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #8494FF, #FF52A0);
+        box-shadow: 0 0 0 rgba(132,148,255,.7);
+        animation: flowPulse 1s infinite;
+      }
+      .flow-sub {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .flow-timer {
+        margin-top: 12px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.75);
+      }
+      .flow-final-badge {
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(134,239,172,0.4);
+        background: rgba(134,239,172,0.12);
+        color: #86efac;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .flow-final-badge[hidden] { display: none; }
+      .seal-mark {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #8494FF, #FF52A0);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .flow-hero {
+        margin-top: 14px;
+        height: 88px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: radial-gradient(circle at center, rgba(201,190,255,0.24), rgba(99,103,255,0.16) 45%, transparent 72%);
+        position: relative;
+        overflow: hidden;
+      }
+      .flow-hero::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 24px;
+        height: 24px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: linear-gradient(180deg, #8494FF, #FF52A0);
+        box-shadow: 0 0 0 rgba(132,148,255,.8);
+        animation: flowCorePulse 1.05s infinite;
+      }
+      .flow-actions {
+        margin-top: 14px;
+        display: grid;
+      }
+      .flow-actions[hidden] { display: none; }
+      .flow-download-btn {
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.22);
+        background: linear-gradient(135deg, rgba(99,103,255,0.62), rgba(255,82,160,0.6));
+        box-shadow: 0 12px 28px rgba(255,82,160,0.34), 0 0 16px rgba(132,148,255,0.24);
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: .02em;
+      }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(132,148,255,.65); opacity: 1; }
+        100% { box-shadow: 0 0 0 10px rgba(132,148,255,0); opacity: .65; }
+      }
+      @keyframes sweep {
+        0% { left: -120%; }
+        100% { left: 130%; }
+      }
+      @keyframes flowPulse {
+        0% { box-shadow: 0 0 0 0 rgba(132,148,255,.58); }
+        100% { box-shadow: 0 0 0 11px rgba(132,148,255,0); }
+      }
+      @keyframes flowCorePulse {
+        0% { box-shadow: 0 0 0 0 rgba(132,148,255,.55), 0 0 22px rgba(255,82,160,.4); transform: translate(-50%, -50%) scale(1); }
+        100% { box-shadow: 0 0 0 28px rgba(132,148,255,0), 0 0 30px rgba(255,82,160,.24); transform: translate(-50%, -50%) scale(1.12); }
+      }
+      @keyframes ambientOrbsDrift {
+        0% { transform: translate3d(0, 0, 0) scale(1); }
+        25% { transform: translate3d(-5.2%, 3.8%, 0) scale(1.06); }
+        50% { transform: translate3d(5.4%, -4.1%, 0) scale(1.02); }
+        75% { transform: translate3d(3.4%, 5.5%, 0) scale(1.08); }
+        100% { transform: translate3d(-4.2%, -3.3%, 0) scale(1); }
+      }
+      @keyframes ambientOrbsDriftReverse {
+        0% { transform: translate3d(0, 0, 0) scale(1); }
+        33% { transform: translate3d(5.1%, -3.8%, 0) scale(1.06); }
+        66% { transform: translate3d(-4.8%, 4.2%, 0) scale(1.03); }
+        100% { transform: translate3d(3.7%, 4.8%, 0) scale(1.08); }
+      }
+      @media (max-width: 760px) {
+        .row { grid-template-columns: 1fr; }
+        button { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="glass head">
+        <h1>SEALED Portal</h1>
+        <div class="sub">Email OTP verification, warranty history, and blockchain proof status.</div>
+      </div>
+
+      <div class="glass box">
+        <div class="row">
+          <div class="field">
+            <label>Email</label>
+            <input id="email" placeholder="you@example.com" />
+          </div>
+          <button id="requestOtpBtn" type="button">Get OTP</button>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+          <div class="field">
+            <label>OTP</label>
+            <input id="otp" placeholder="6-digit OTP" />
+          </div>
+          <button id="verifyBtn" type="button">Verify OTP</button>
+        </div>
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="glass box">
+        <div style="font-weight:600;margin-bottom:10px;">Warranties</div>
+        <div id="list" class="list"></div>
+      </div>
+    </div>
+    <div id="flowModal" class="flow-modal" hidden aria-live="polite">
+      <div class="flow-card">
+        <div class="flow-head">
+          <div id="flowTitle" class="flow-title">Working on it...</div>
+          <button id="flowCloseBtn" class="flow-close" type="button" aria-label="Close">x</button>
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <span class="flow-dot"></span>
+          <span>Processing...</span>
+        </div>
+        <div id="flowSub" class="flow-sub">Please stay on this page.</div>
+        <div id="flowTimer" class="flow-timer"></div>
+        <div id="flowFinalBadge" class="flow-final-badge" hidden>
+          <span class="seal-mark">✓</span>
+          <span>Authenticated seal verified (non-tampered)</span>
+        </div>
+        <div class="flow-hero" aria-hidden="true"></div>
+        <div id="flowActions" class="flow-actions" hidden>
+          <button id="flowDownloadBtn" class="flow-download-btn" type="button">Download Certificate</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE =
+        window.__SEALED_API_BASE__ ||
+        localStorage.getItem('SEALED_API_BASE') ||
+        'http://localhost:4601';
+      let token = '';
+      const statusEl = document.getElementById('status');
+      const listEl = document.getElementById('list');
+      const requestBtn = document.getElementById('requestOtpBtn');
+      const verifyBtn = document.getElementById('verifyBtn');
+      const flowModalEl = document.getElementById('flowModal');
+      const flowTitleEl = document.getElementById('flowTitle');
+      const flowStageEl = document.getElementById('flowStage');
+      const flowSubEl = document.getElementById('flowSub');
+      const flowTimerEl = document.getElementById('flowTimer');
+      const flowFinalBadgeEl = document.getElementById('flowFinalBadge');
+      const flowCloseBtnEl = document.getElementById('flowCloseBtn');
+      const flowActionsEl = document.getElementById('flowActions');
+      const flowDownloadBtnEl = document.getElementById('flowDownloadBtn');
+      let flowTimerInterval = null;
+      let modalWarrantyId = null;
+
+      function esc(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showFlowModal(title, stage, subText = 'Please stay on this page.', warrantyId = null) {
+        flowTitleEl.textContent = title;
+        flowStageEl.innerHTML = `<span class="flow-dot"></span><span>${stage}</span>`;
+        flowSubEl.textContent = subText;
+        flowTimerEl.textContent = '';
+        flowActionsEl.hidden = true;
+        flowFinalBadgeEl.hidden = true;
+        modalWarrantyId = warrantyId;
+        flowModalEl.hidden = false;
+      }
+
+      function setFlowStage(stage, subText) {
+        flowStageEl.innerHTML = `<span class="flow-dot"></span><span>${stage}</span>`;
+        if (subText) flowSubEl.textContent = subText;
+      }
+
+      function hideFlowModal() {
+        if (flowTimerInterval) {
+          clearInterval(flowTimerInterval);
+          flowTimerInterval = null;
+        }
+        flowActionsEl.hidden = true;
+        flowFinalBadgeEl.hidden = true;
+        modalWarrantyId = null;
+        flowModalEl.hidden = true;
+      }
+
+      function startFlowCountdown(seconds) {
+        let remaining = seconds;
+        flowTimerEl.textContent = `Estimated secure check time: ${remaining}s`;
+        if (flowTimerInterval) clearInterval(flowTimerInterval);
+        flowTimerInterval = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(flowTimerInterval);
+            flowTimerInterval = null;
+            flowTimerEl.textContent = 'Completing blockchain verification...';
+            return;
+          }
+          flowTimerEl.textContent = `Estimated secure check time: ${remaining}s`;
+        }, 1000);
+      }
+
+      function setButtonBusy(btn, busyText) {
+        if (!btn.dataset.originalLabel) btn.dataset.originalLabel = btn.textContent;
+        btn.disabled = true;
+        btn.classList.add('shimmer');
+        btn.textContent = busyText;
+      }
+
+      function clearButtonBusy(btn) {
+        btn.disabled = false;
+        btn.classList.remove('shimmer');
+        btn.textContent = btn.dataset.originalLabel || btn.textContent;
+      }
+
+      async function requestOtp() {
+        statusEl.className = 'status';
+        setButtonBusy(requestBtn, 'Sending...');
+        const email = document.getElementById('email').value.trim();
+        try {
+          const res = await fetch(`${API_BASE}/api/portal/otp/request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          if (!res.ok) {
+            statusEl.textContent = 'Failed to send OTP.';
+            return;
+          }
+          statusEl.className = 'status ok';
+          statusEl.textContent = 'OTP sent. Check your email.';
+        } finally {
+          clearButtonBusy(requestBtn);
+        }
+      }
+
+      async function verifyOtp() {
+        statusEl.className = 'status';
+        setButtonBusy(verifyBtn, 'Verifying...');
+        const email = document.getElementById('email').value.trim();
+        const otp = document.getElementById('otp').value.trim();
+        try {
+          const res = await fetch(`${API_BASE}/api/portal/otp/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            statusEl.textContent = data.message || 'OTP verify failed';
+            return;
+          }
+          token = data.token;
+          statusEl.className = 'status ok';
+          statusEl.textContent = 'Verified.';
+          await loadWarranties();
+        } finally {
+          clearButtonBusy(verifyBtn);
+        }
+      }
+
+      async function loadWarranties() {
+        listEl.innerHTML = '';
+        const res = await fetch(`${API_BASE}/api/portal/warranties`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          listEl.innerHTML = '<div class="item">Unable to load warranties.</div>';
+          return;
+        }
+        if (!data.items.length) {
+          listEl.innerHTML = '<div class="item">No warranties for this email.</div>';
+          return;
+        }
+        listEl.innerHTML = data.items.map((w) => `
+          <div class="item">
+            <div class="id-pill">ID: ${esc(w.warrantyId)}</div>
+            <div class="kv"><div class="k">Warranty ID</div><div>${esc(w.warrantyId)}</div></div>
+            <div class="kv"><div class="k">Root ID</div><div>${esc(w.warrantyRootId)}</div></div>
+            <div class="kv"><div class="k">Version</div><div>${esc(w.versionNo)}</div></div>
+            <div class="kv"><div class="k">Event</div><div>${esc(w.eventType)}</div></div>
+            <div class="kv"><div class="k">Period</div><div>${esc(w.startDate)} -> ${esc(w.endDate)}</div></div>
+            <div class="kv"><div class="k">Hash</div><div>${esc(w.payloadHash)}</div></div>
+            <div class="kv"><div class="k">Chain</div><div>${esc(w.onChainStatus)} ${w.onChainTxHash ? `(${esc(w.onChainTxHash)})` : ''}</div></div>
+            <div class="actions">
+              <button class="btn-soft" type="button" data-action="validate" data-id="${esc(w.warrantyId)}">Authenticate on Blockchain</button>
+            </div>
+            <div class="verify-out" id="verify-${esc(w.warrantyId)}"></div>
+          </div>
+        `).join('');
+
+        listEl.querySelectorAll('button[data-action="validate"]').forEach((btn) => {
+          btn.addEventListener('click', () => void validateWarranty(btn.dataset.id));
+        });
+      }
+
+      async function validateWarranty(warrantyId) {
+        const out = document.getElementById(`verify-${warrantyId}`);
+        out.textContent = '';
+        showFlowModal('Authenticity Check', 'Validating warranty data...', 'Recomputing payload fingerprint', warrantyId);
+        startFlowCountdown(6);
+        await new Promise((r) => setTimeout(r, 1800));
+        setFlowStage('Checking blockchain proof...', 'Comparing on-chain record with sealed snapshot');
+        await new Promise((r) => setTimeout(r, 1700));
+        setFlowStage('Contacting distributed nodes...', 'Verifying untampered integrity trail');
+        let keepModalOpen = false;
+        try {
+          const res = await fetch(`${API_BASE}/api/portal/warranties/${encodeURIComponent(warrantyId)}/validate`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          await new Promise((r) => setTimeout(r, 1400));
+          if (!res.ok) {
+            out.textContent = '';
+            return;
+          }
+          if (data.verification === 'AUTHENTIC_UNTAMPERED') {
+            setFlowStage('Warranty verified successfully', 'Your blockchain proof is authentic and untampered');
+            await new Promise((r) => setTimeout(r, 1000));
+            flowTimerEl.textContent = 'Document is finally authenticated and non-tampered.';
+            flowFinalBadgeEl.hidden = false;
+            flowActionsEl.hidden = false;
+            keepModalOpen = true;
+            return;
+          }
+          setFlowStage('Verification mismatch found', 'On-chain proof does not match sealed snapshot');
+          await new Promise((r) => setTimeout(r, 700));
+          out.textContent = '';
+        } finally {
+          if (!keepModalOpen) hideFlowModal();
+        }
+      }
+
+      async function downloadCertificate(warrantyId, withinModal = false) {
+        const out = document.getElementById(`verify-${warrantyId}`);
+        out.textContent = '';
+        if (!withinModal) {
+          showFlowModal('Certificate Download', 'Preparing certificate...', 'Packaging your authenticity certificate', warrantyId);
+          startFlowCountdown(4);
+        } else {
+          setFlowStage('Preparing certificate...', 'Packaging your authenticity certificate');
+          startFlowCountdown(4);
+        }
+        try {
+          const res = await fetch(`${API_BASE}/api/portal/warranties/${encodeURIComponent(warrantyId)}/certificate`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            out.textContent = '';
+            return;
+          }
+
+          setFlowStage('Starting secure download...', 'Almost done');
+          await new Promise((r) => setTimeout(r, 1100));
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `certificate-${warrantyId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          out.textContent = '';
+          setFlowStage('Certificate downloaded successfully', 'You can close this window.');
+        } finally {
+          if (!withinModal) hideFlowModal();
+        }
+      }
+
+      flowCloseBtnEl.addEventListener('click', () => hideFlowModal());
+      flowDownloadBtnEl.addEventListener('click', () => {
+        if (modalWarrantyId) void downloadCertificate(modalWarrantyId, true);
+      });
+      document.getElementById('requestOtpBtn').addEventListener('click', () => void requestOtp());
+      document.getElementById('verifyBtn').addEventListener('click', () => void verifyOtp());
+    </script>
+  </body>
+</html>
+

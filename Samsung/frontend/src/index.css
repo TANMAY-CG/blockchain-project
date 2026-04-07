@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #020617;
+  --panel: rgba(255, 255, 255, 0.045);
+  --panel-2: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #e2e8f0;
+  --muted: #a5b4c8;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --btn-dark: #6367FF;
+  --btn-dark-2: #FF52A0;
+  --accent-purple: #6367FF;
+  --accent-pink: #FF52A0;
+  --accent-soft: #C9BEFF;
+  --btn-light: #ffffff;
+  --shadow: 0 18px 56px rgba(2, 6, 23, 0.52);
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-muted: rgba(255, 255, 255, 0.4);
+
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(
+      circle at 20% 30%,
+      rgba(99, 103, 255, 0.18),
+      transparent 40%
+    ),
+    radial-gradient(circle at 80% 70%, rgba(255, 82, 160, 0.2), transparent 44%),
+    #020617;
+  color: #ffffff;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: -12% -10% -12% -10%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 12% 24%, rgba(99, 103, 255, 0.36) 0%, rgba(99, 103, 255, 0) 36%),
+    radial-gradient(circle at 78% 20%, rgba(132, 148, 255, 0.32) 0%, rgba(132, 148, 255, 0) 34%),
+    radial-gradient(circle at 58% 74%, rgba(201, 190, 255, 0.3) 0%, rgba(201, 190, 255, 0) 37%),
+    radial-gradient(circle at 26% 82%, rgba(255, 82, 160, 0.24) 0%, rgba(255, 82, 160, 0) 32%);
+  filter: blur(6px);
+  animation: ambientOrbsDrift 9s ease-in-out infinite alternate;
+}
+
+#root {
+  min-height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+#root::before {
+  content: '';
+  position: fixed;
+  inset: -8% -8% -8% -8%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 18% 68%, rgba(132, 148, 255, 0.3) 0%, rgba(132, 148, 255, 0) 28%),
+    radial-gradient(circle at 86% 72%, rgba(255, 219, 253, 0.24) 0%, rgba(255, 219, 253, 0) 25%);
+  filter: blur(8px);
+  animation: ambientOrbsDriftReverse 11s ease-in-out infinite alternate;
+}
+
+@keyframes ambientOrbsDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(-5.2%, 3.8%, 0) scale(1.06);
+  }
+  50% {
+    transform: translate3d(5.4%, -4.1%, 0) scale(1.02);
+  }
+  75% {
+    transform: translate3d(3.4%, 5.5%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-4.2%, -3.3%, 0) scale(1);
+  }
+}
+
+@keyframes ambientOrbsDriftReverse {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(5.1%, -3.8%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-4.8%, 4.2%, 0) scale(1.03);
+  }
+  100% {
+    transform: translate3d(3.7%, 4.8%, 0) scale(1.08);
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Force typography hierarchy across the app */
+h1,
+h2,
+h3 {
+  color: var(--text-primary) !important;
+}
+
+p,
+label {
+  color: var(--text-secondary) !important;
+}
+
+small,
+.helper-text {
+  color: var(--text-muted) !important;
+}
+
+/* Force glass inputs globally (override legacy styles) */
+input {
+  width: 100% !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  border-radius: 12px !important;
+  padding: 0 44px 0 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  backdrop-filter: blur(10px);
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+input:focus {
+  outline: none !important;
+  border-color: rgba(99, 103, 255, 0.66) !important;
+  box-shadow: 0 0 0 2px rgba(132, 148, 255, 0.24) !important;
+}
+
+input:disabled {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Keep native date controls aligned with dark UI */
+input[type='date'] {
+  color-scheme: dark;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) opacity(0.9);
+}
+
+/* Global subtle glass scrollbar (all scrollable containers) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+

@@ -1,0 +1,27 @@
+# Required (deploy / secrets)
+.env
+node_modules
+dist
+build
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/dist/
+**/.next/
+**/coverage/
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local runtime artifacts
+backend/sealed-problems.log.jsonl
+backend/certificates/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
