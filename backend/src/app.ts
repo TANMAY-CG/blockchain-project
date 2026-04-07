@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { eventsRouter } from './routes/events';
@@ -26,7 +26,7 @@ export function createApp() {
     })
   );
   app.use(express.json({ limit: '1mb' }));
-  app.use((_, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -34,7 +34,7 @@ export function createApp() {
     next();
   });
 
-  app.get('/', (_req, res) =>
+  app.get('/', (req: Request, res: Response) =>
     res.json({
       service: 'Sealed Backend API',
       ok: true,
@@ -51,12 +51,12 @@ export function createApp() {
     })
   );
 
-  app.get('/portal', (_req, res) => {
+  app.get('/portal', (req: Request, res: Response) => {
     const file = path.resolve(process.cwd(), '..', 'frontend', 'sealed-portal.html');
     return res.sendFile(file);
   });
 
-  app.get('/health', (_req, res) => res.json({ ok: true }));
+  app.get('/health', (req: Request, res: Response) => res.json({ ok: true }));
   app.use('/api/events', eventsRouter);
   app.use('/api/portal', portalRouter);
 
