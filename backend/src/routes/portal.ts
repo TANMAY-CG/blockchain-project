@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import fs from 'fs';
 import { OtpRequestSchema, OtpVerifySchema } from '../schemas/portal';
@@ -22,7 +22,7 @@ function makeOtp() {
   return `${Math.floor(100000 + Math.random() * 900000)}`;
 }
 
-portalRouter.post('/otp/request', async (req, res) => {
+portalRouter.post('/otp/request', async (req: Request, res: Response) => {
   const parsed = OtpRequestSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'Invalid email' });
 
@@ -45,7 +45,7 @@ portalRouter.post('/otp/request', async (req, res) => {
   return res.json({ ok: true });
 });
 
-portalRouter.post('/otp/verify', async (req, res) => {
+portalRouter.post('/otp/verify', async (req: Request, res: Response) => {
   const parsed = OtpVerifySchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'Invalid body' });
   const normalizedEmail = normalizeEmail(parsed.data.email);
@@ -74,7 +74,7 @@ portalRouter.post('/otp/verify', async (req, res) => {
   return res.json({ ok: true, token, expiresAt: sessionExp.toISOString() });
 });
 
-async function getSession(req: { headers: Record<string, string | string[] | undefined> }) {
+async function getSession(req: Request) {
   const auth = String(req.headers.authorization ?? '');
   const token = auth.startsWith('Bearer ') ? auth.slice('Bearer '.length) : '';
   if (!token) return null;
@@ -84,7 +84,7 @@ async function getSession(req: { headers: Record<string, string | string[] | und
   return session;
 }
 
-portalRouter.get('/warranties', async (req, res) => {
+portalRouter.get('/warranties', async (req: Request, res: Response) => {
   const session = await getSession(req);
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
   const items = await WarrantyVersion.find({ normalizedEmail: session.normalizedEmail })
@@ -93,7 +93,7 @@ portalRouter.get('/warranties', async (req, res) => {
   return res.json({ items });
 });
 
-portalRouter.get('/warranties/:warrantyId/verify', async (req, res) => {
+portalRouter.get('/warranties/:warrantyId/verify', async (req: Request, res: Response) => {
   const session = await getSession(req);
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
   const warrantyId = String(req.params.warrantyId || '').trim();
@@ -112,7 +112,7 @@ portalRouter.get('/warranties/:warrantyId/verify', async (req, res) => {
   });
 });
 
-portalRouter.get('/warranties/:warrantyId/validate', async (req, res) => {
+portalRouter.get('/warranties/:warrantyId/validate', async (req: Request, res: Response) => {
   const session = await getSession(req);
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
 
@@ -155,7 +155,7 @@ portalRouter.get('/warranties/:warrantyId/validate', async (req, res) => {
   });
 });
 
-portalRouter.get('/warranties/:warrantyId/certificate', async (req, res) => {
+portalRouter.get('/warranties/:warrantyId/certificate', async (req: Request, res: Response) => {
   const session = await getSession(req);
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
 

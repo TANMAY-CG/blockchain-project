@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import { IngestWarrantyEventSchema } from '../schemas/events';
 import { WarrantyVersion } from '../models/WarrantyVersion';
@@ -21,7 +21,7 @@ function verifySignature(rawBody: string, signature: string | undefined) {
   return timingSafeEqual(expected, supplied);
 }
 
-eventsRouter.post('/warranty', async (req, res) => {
+eventsRouter.post('/warranty', async (req: Request, res: Response) => {
   const rawBody = JSON.stringify(req.body ?? {});
   const signature = String(req.headers['x-snovia-signature'] ?? '');
   if (!verifySignature(rawBody, signature)) {
