@@ -475,10 +475,7 @@
     </div>
 
     <script>
-      const API_BASE =
-        window.__SEALED_API_BASE__ ||
-        localStorage.getItem('SEALED_API_BASE') ||
-        'https://blockchain-project-h87v.onrender.com';
+      const BASE_URL = "https://blockchain-project-2-zwjg.onrender.com";
       let token = '';
       const statusEl = document.getElementById('status');
       const listEl = document.getElementById('list');
@@ -566,7 +563,7 @@
         setButtonBusy(requestBtn, 'Sending...');
         const email = document.getElementById('email').value.trim();
         try {
-          const res = await fetch(`${API_BASE}/api/portal/otp/request`, {
+          const res = await fetch(`${BASE_URL}/api/portal/otp/request`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),
@@ -588,7 +585,7 @@
         const email = document.getElementById('email').value.trim();
         const otp = document.getElementById('otp').value.trim();
         try {
-          const res = await fetch(`${API_BASE}/api/portal/otp/verify`, {
+          const res = await fetch(`${BASE_URL}/api/portal/otp/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, otp }),
@@ -609,7 +606,7 @@
 
       async function loadWarranties() {
         listEl.innerHTML = '';
-        const res = await fetch(`${API_BASE}/api/portal/warranties`, {
+        const res = await fetch(`${BASE_URL}/api/portal/warranties`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -654,7 +651,7 @@
         setFlowStage('Contacting distributed nodes...', 'Verifying untampered integrity trail');
         let keepModalOpen = false;
         try {
-          const res = await fetch(`${API_BASE}/api/portal/warranties/${encodeURIComponent(warrantyId)}/validate`, {
+          const res = await fetch(`${BASE_URL}/api/portal/warranties/${encodeURIComponent(warrantyId)}/validate`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
@@ -691,7 +688,7 @@
           startFlowCountdown(4);
         }
         try {
-          const res = await fetch(`${API_BASE}/api/portal/warranties/${encodeURIComponent(warrantyId)}/certificate`, {
+          const res = await fetch(`${BASE_URL}/api/portal/warranties/${encodeURIComponent(warrantyId)}/certificate`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!res.ok) {
