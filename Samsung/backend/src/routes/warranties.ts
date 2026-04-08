@@ -153,8 +153,11 @@ warrantiesRouter.post('/', async (req, res) => {
   warranty.warrantyId = await generateUniqueWarrantyId();
   await warranty.save();
 
-  // Fire-and-forget send to Sealed
-  void sendWarrantyToSeal({
+  console.log('Sending warranty to Sealed:', {
+    warrantyId: warranty.warrantyId,
+    warrantyRootId: warranty.warrantyRootId,
+  });
+  await sendWarrantyToSeal({
     eventType: 'REGISTER',
     warrantyRootId: warranty.warrantyRootId,
     warrantyId: warranty.warrantyId,
@@ -255,7 +258,11 @@ warrantiesRouter.post('/renew', async (req, res) => {
   newWarranty.warrantyId = await generateUniqueWarrantyId();
   await newWarranty.save();
 
-  void sendWarrantyToSeal({
+  console.log('Sending warranty to Sealed:', {
+    warrantyId: newWarranty.warrantyId,
+    warrantyRootId: newWarranty.warrantyRootId,
+  });
+  await sendWarrantyToSeal({
     eventType: 'RENEW',
     warrantyRootId: newWarranty.warrantyRootId,
     warrantyId: newWarranty.warrantyId,
