@@ -185,7 +185,8 @@ function App() {
     setRoute('register');
   }
 
-  const apiBaseURL = import.meta.env.VITE_SNOVIA_API_BASE ?? 'http://localhost:4001';
+  const apiBaseURL =
+    import.meta.env.VITE_API_BASE_URL ?? 'https://blockchain-project-1-afql.onrender.com';
 
   useEffect(() => {
     if (!isAuthed && page !== 'admin-gate') {

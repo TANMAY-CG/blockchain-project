@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_SNOVIA_API_BASE ?? 'http://localhost:4001';
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? 'https://blockchain-project-1-afql.onrender.com';
 
 export type Product = {
   productId: string;
@@ -90,7 +91,7 @@ export type RenewWarrantyResponse = {
   endDate: string;
 };
 
-const client = axios.create({ baseURL });
+const client = axios.create({ baseURL: BASE_URL });
 
 export async function fetchProductById(productId: string) {
   const res = await client.get<Product>(`/api/products/${encodeURIComponent(productId)}`);
