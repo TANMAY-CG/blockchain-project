@@ -18,7 +18,7 @@ export async function sendWarrantyToSeal(payload: {
   const signature = createHmac('sha256', env.SEALED_WEBHOOK_SECRET).update(body).digest('hex');
   try {
     const response = await axios.post(env.SEAL_API_URL, payload, {
-      timeout: 5000,
+      timeout: 60000,
       headers: {
         'Content-Type': 'application/json',
         'x-snovia-signature': signature,
