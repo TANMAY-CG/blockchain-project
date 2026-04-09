@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import { createHmac, timingSafeEqual } from 'crypto';
-import fs from 'fs';
 import { IngestWarrantyEventSchema } from '../schemas/events';
 import { WarrantyVersion } from '../models/WarrantyVersion';
 import { normalizeEmail, normalizeSerial } from '../utils/normalize';
@@ -107,8 +106,7 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
     await doc.save();
 
     console.log("BEFORE EMAIL SEND", payload.warrantyId, new Date().toISOString());
-    const certBuffer = await fs.promises.readFile(certPath);
-    await sendCertificateEmail(payload.customer.email, certBuffer, 'certificate.pdf');
+    await sendCertificateEmail(payload.customer.email, certPath);
     console.log("AFTER EMAIL SEND", payload.warrantyId, new Date().toISOString());
   } catch (error) {
     await logProblem({

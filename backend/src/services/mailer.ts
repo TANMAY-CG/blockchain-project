@@ -1,47 +1,47 @@
-import { BrevoClient } from '@getbrevo/brevo';
+import nodemailer from 'nodemailer';
 
-const apiInstance = new BrevoClient({
-  apiKey: process.env.BREVO_PASS ?? '',
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
 });
 
-const SENDER_EMAIL = process.env.BREVO_USER;
-
-// ================= OTP EMAIL =================
 export async function sendOtpEmail(to: string, otp: string) {
-  console.log('[OTP][BREVO API] Sending to:', to);
-
-  const email = {
-    sender: { email: SENDER_EMAIL },
-    to: [{ email: to }],
-    subject: 'Your OTP Code',
-    htmlContent: `<h2>Your OTP is: ${otp}</h2>`,
-  };
-
-  const res = await apiInstance.transactionalEmails.sendTransacEmail(email);
-  console.log('[OTP][BREVO API] Sent:', res);
+  console.log('[MAIL][OTP] Before send', { to });
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to,
+      subject: 'Your OTP Code',
+      text: `Your OTP is ${otp}`,
+    });
+    console.log('[MAIL][OTP] After success', info);
+  } catch (err) {
+    console.error('[MAIL][OTP] Error:', err instanceof Error ? err.message : err);
+    throw err;
+  }
 }
 
-// ================= CERTIFICATE EMAIL =================
-export async function sendCertificateEmail(
-  to: string,
-  pdfBuffer: Buffer,
-  filename: string
-) {
-  console.log('[CERT][BREVO API] Sending to:', to);
-
-  const email = {
-    sender: { email: SENDER_EMAIL },
-    to: [{ email: to }],
-    subject: 'Your Warranty Certificate',
-    htmlContent: `<p>Your warranty certificate is attached.</p>`,
-    attachment: [
-      {
-        content: pdfBuffer.toString('base64'),
-        name: filename,
-      },
-    ],
-  };
-
-  const res = await apiInstance.transactionalEmails.sendTransacEmail(email);
-  console.log('[CERT][BREVO API] Sent:', res);
+export async function sendCertificateEmail(email: string, pdfPath: string) {
+  console.log('[MAIL][CERT] Before send', { email, pdfPath });
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: 'Your Warranty Certificate',
+      text: 'Attached is your certificate',
+      attachments: [
+        {
+          filename: 'certificate.pdf',
+          path: pdfPath,
+        },
+      ],
+    });
+    console.log('[MAIL][CERT] After success', info);
+  } catch (err) {
+    console.error('[MAIL][CERT] Error:', err instanceof Error ? err.message : err);
+    throw err;
+  }
 }
