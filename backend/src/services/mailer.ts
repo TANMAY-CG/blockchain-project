@@ -1,74 +1,47 @@
-import { Resend } from 'resend';
-import nodemailer from 'nodemailer';
-import { env } from '../config/env';
-import { logProblem } from './problemsLogger';
+import { BrevoClient } from '@getbrevo/brevo';
 
-let resendSingleton: Resend | null = null;
-
-function getResend(): Resend | null {
-  const key = env.RESEND_API_KEY?.trim();
-  if (!key) return null;
-  if (!resendSingleton) resendSingleton = new Resend(key);
-  return resendSingleton;
-}
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 2525,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS,
-  },
+const apiInstance = new BrevoClient({
+  apiKey: process.env.BREVO_PASS ?? '',
 });
 
+const SENDER_EMAIL = process.env.BREVO_USER;
+
+// ================= OTP EMAIL =================
 export async function sendOtpEmail(to: string, otp: string) {
-  console.log('[OTP][BREVO] Sending to:', to);
+  console.log('[OTP][BREVO API] Sending to:', to);
 
-  const info = await transporter.sendMail({
-    from: process.env.BREVO_USER,
-    to,
+  const email = {
+    sender: { email: SENDER_EMAIL },
+    to: [{ email: to }],
     subject: 'Your OTP Code',
-    html: `<h2>Your OTP is: ${otp}</h2>`,
-  });
+    htmlContent: `<h2>Your OTP is: ${otp}</h2>`,
+  };
 
-  console.log('[OTP][BREVO] Sent:', info);
+  const res = await apiInstance.transactionalEmails.sendTransacEmail(email);
+  console.log('[OTP][BREVO API] Sent:', res);
 }
 
-export async function sendCertificateEmail(params: {
-  to: string;
-  customerName: string;
-  warrantyId: string;
-  warrantyRootId: string;
-  payloadHash: string;
-  txHash?: string;
-  certificatePath?: string;
-}) {
-  const resend = getResend();
-  if (!resend) {
-    await logProblem({
-      where: 'mailer:sendCertificateEmail',
-      how: 'Resend API key missing',
-      severity: 'Medium',
-      error: `Certificate email skipped for ${params.to}`,
-    });
-    return;
-  }
+// ================= CERTIFICATE EMAIL =================
+export async function sendCertificateEmail(
+  to: string,
+  pdfBuffer: Buffer,
+  filename: string
+) {
+  console.log('[CERT][BREVO API] Sending to:', to);
 
-  await resend.emails.send({
-    from: 'onboarding@resend.dev',
-    to: params.to,
-    subject: 'Your Sealed Warranty Certificate',
-    html: `<p>Your warranty has been sealed.</p>`,
-    ...(params.certificatePath
-      ? {
-          attachments: [
-            {
-              filename: 'certificate.pdf',
-              path: params.certificatePath,
-            },
-          ],
-        }
-      : {}),
-  });
+  const email = {
+    sender: { email: SENDER_EMAIL },
+    to: [{ email: to }],
+    subject: 'Your Warranty Certificate',
+    htmlContent: `<p>Your warranty certificate is attached.</p>`,
+    attachment: [
+      {
+        content: pdfBuffer.toString('base64'),
+        name: filename,
+      },
+    ],
+  };
+
+  const res = await apiInstance.transactionalEmails.sendTransacEmail(email);
+  console.log('[CERT][BREVO API] Sent:', res);
 }
