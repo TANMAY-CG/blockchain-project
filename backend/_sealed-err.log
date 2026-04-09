@@ -1,0 +1,8 @@
+TypeError: (0 , mailer_1.testSMTP) is not a function
+    at Server.<anonymous> (F:\Blockchain Project\backend\src\server.ts:13:18)
+    at Server.f (F:\Blockchain Project\backend\node_modules\once\once.js:25:25)
+    at Object.onceWrapper (node:events:633:28)
+    at Server.emit (node:events:531:35)
+    at emitListeningNT (node:net:1947:10)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21)
+^C

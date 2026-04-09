@@ -150,10 +150,6 @@ function App() {
     el.style.height = `${el.scrollHeight}px`;
   }, [form.notes, renewForm.notes, route]);
 
-  function normalizeProductId(input: string) {
-    return input.trim().toUpperCase();
-  }
-
   function goRegister() {
     window.history.pushState({}, '', '/');
     setRoute('register');
@@ -253,10 +249,11 @@ function App() {
     setStatus(null);
     setIsBusy(true);
     try {
-      const normalized = normalizeProductId(id);
-      const p = await fetchProductById(normalized);
+      const productId = id.trim();
+      console.log('Fetching product:', productId);
+      const p = await fetchProductById(productId.trim());
       setProduct(p);
-      setProductId(normalized);
+      setProductId(productId);
       // Success message intentionally not shown; only show loud errors.
       setStatus(null);
     } catch {
@@ -313,6 +310,8 @@ function App() {
           notes: form.notes.trim() || undefined,
         },
       };
+
+      console.log('[onSubmit] before registerWarranty', new Date().toISOString());
 
       const res = await registerWarranty(payload);
 
@@ -688,23 +687,19 @@ function App() {
                           setProductId(next);
                           setProduct(null);
                           setStatus(null);
-
-                          const normalized = normalizeProductId(next);
-                          // Only call backend when we have a complete productId like P001
-                          if (/^P\d{3}$/.test(normalized) && !isBusy) {
-                            void lookupProduct(normalized);
-                          }
                         }}
-                        onBlur={() => {
-                          const id = normalizeProductId(productId);
-                          if (id) void lookupProduct(id);
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            void lookupProduct(productId);
+                          }
                         }}
                       />
                       <button
                         type="button"
                         className="btn-submit"
                         style={{ minWidth: 70, height: 34, padding: '0 12px' }}
-                        onClick={() => setScannerOpen(true)}
+                        onClick={() => void lookupProduct(productId)}
                       >
                         Scan
                       </button>
@@ -899,9 +894,11 @@ function App() {
                     setProductId(next);
                     setProduct(null);
                     setStatus(null);
-                    const normalized = normalizeProductId(next);
-                    if (/^P\d{3}$/.test(normalized) && !isBusy) {
-                      void lookupProduct(normalized);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      void lookupProduct(productId);
                     }
                   }}
                 />
@@ -910,7 +907,7 @@ function App() {
                   className="btn-submit modal-action-primary"
                   disabled={!productId.trim() || isBusy}
                   onClick={() => {
-                    void lookupProduct(normalizeProductId(productId));
+                    void lookupProduct(productId);
                     setScannerOpen(false);
                   }}
                 >

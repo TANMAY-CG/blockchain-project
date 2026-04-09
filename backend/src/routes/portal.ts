@@ -34,13 +34,18 @@ portalRouter.post('/otp/request', async (req: Request, res: Response) => {
     return res.status(429).json({ message: 'Too many OTP requests. Please try again later.' });
   }
 
+  console.log('[TEMP][OTP] Before OTP generate', { email: parsed.data.email, normalizedEmail });
   const otp = makeOtp();
+  console.log('[TEMP][OTP] After OTP generate', { email: parsed.data.email, otp });
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-  await OtpToken.findOneAndUpdate(
+  console.log('[TEMP][OTP] Before DB save', { normalizedEmail, expiresAt });
+  const savedOtpToken = await OtpToken.findOneAndUpdate(
     { normalizedEmail },
     { normalizedEmail, otpHash: hashOtp(otp), expiresAt, attempts: 0 },
-    { upsert: true }
+    { upsert: true, new: true }
   );
+  console.log('[TEMP][OTP] After DB save', { savedOtpToken });
+  console.log("OTP EMAIL TO:", parsed.data.email);
   await sendOtpEmail(parsed.data.email, otp);
   return res.json({ ok: true });
 });

@@ -42,6 +42,7 @@ export async function anchorOnChain(input: {
   const contract = new ethers.Contract(env.HARDHAT_CONTRACT_ADDRESS, WARRANTY_REGISTRY_ABI, wallet);
 
   const prev = input.previousVersionHash ? toBytes32Hex(input.previousVersionHash) : ethers.ZeroHash;
+  console.log("TX SEND START", new Date().toISOString());
   const tx = await contract.appendWarrantyVersion(
     input.warrantyRootId,
     input.versionNo,
@@ -51,7 +52,10 @@ export async function anchorOnChain(input: {
     toBytes32Hex(input.payloadHash),
     prev
   );
+  console.log("TX SENT", tx.hash, new Date().toISOString());
+  console.log("WAITING FOR CONFIRMATION", new Date().toISOString());
   const receipt = await tx.wait();
+  console.log("TX CONFIRMED", receipt.hash, new Date().toISOString());
   return { status: 'ANCHORED' as const, txHash: receipt.hash as string };
 }
 

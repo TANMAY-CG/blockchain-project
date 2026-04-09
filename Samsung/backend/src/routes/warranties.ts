@@ -153,6 +153,8 @@ warrantiesRouter.post('/', async (req, res) => {
   warranty.warrantyId = await generateUniqueWarrantyId();
   await warranty.save();
 
+  console.log('[POST /api/warranties]', new Date().toISOString(), 'warrantyId:', warranty.warrantyId);
+
   console.log('Sending warranty to Sealed:', {
     warrantyId: warranty.warrantyId,
     warrantyRootId: warranty.warrantyRootId,

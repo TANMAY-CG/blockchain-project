@@ -1,0 +1,46 @@
+﻿
+> sealed-backend@1.0.0 dev
+> ts-node-dev --respawn --transpile-only src/server.ts
+
+[INFO] 01:51:47 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 6.0.2)
+[dotenv@17.3.1] injecting env (15) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+Sealed backend listening on :4601
+SMTP SUCCESS: {
+  accepted: [ 'astracorporations71@gmail.com' ],
+  rejected: [],
+  ehlo: [
+    'SIZE 35882577',
+    '8BITMIME',
+    'AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH',
+    'ENHANCEDSTATUSCODES',
+    'PIPELINING',
+    'CHUNKING',
+    'SMTPUTF8'
+  ],
+  envelopeTime: 805,
+  messageTime: 722,
+  messageSize: 313,
+  response: '250 2.0.0 OK  1775679714 d9443c01a7336-2b27497c0f3sm223733595ad.41 - gsmtp',
+  envelope: {
+    from: 'astracorporations71@gmail.com',
+    to: [ 'astracorporations71@gmail.com' ]
+  },
+  messageId: '<11af3053-e77d-1c7b-f025-58d92239b924@gmail.com>'
+}
+ANCHOR START WARID-41829077 2026-04-08T20:22:04.034Z
+TX SEND START 2026-04-08T20:22:04.189Z
+TX SENT 0x86f657a9850889733ee88761766a68cf6c2cc313ef87101cd3e83d3c99971224 2026-04-08T20:22:05.608Z
+WAITING FOR CONFIRMATION 2026-04-08T20:22:05.608Z
+TX CONFIRMED 0x86f657a9850889733ee88761766a68cf6c2cc313ef87101cd3e83d3c99971224 2026-04-08T20:22:14.208Z
+AFTER DB CREATE WARID-41829077 2026-04-08T20:22:14.256Z
+BEFORE CERTIFICATE GENERATION WARID-41829077 2026-04-08T20:22:14.256Z
+AFTER CERTIFICATE GENERATION WARID-41829077 F:\Blockchain Project\backend\certificates\WARID-41829077.pdf 2026-04-08T20:22:14.318Z
+BEFORE EMAIL SEND WARID-41829077 2026-04-08T20:22:14.334Z
+EMAIL DEBUG START
+TO: astracorporations71@gmail.com
+FROM: Sealed Warranty <astracorporations71@gmail.com>
+HAS ATTACHMENT: true
+EMAIL SENT SUCCESS
+AFTER EMAIL SEND WARID-41829077 2026-04-08T20:22:17.860Z
+BEFORE FINAL 201 WARID-41829077 2026-04-08T20:22:17.860Z
+OTP EMAIL TO: astracorporations71@gmail.com

@@ -1,0 +1,1 @@
+{"eventType":"REGISTER","warrantyRootId":"WROOT-WAR-LOG-1775675124816","warrantyId":"WAR-LOG-1775675124816","versionNo":1,"customer":{"name":"L","email":"l@test.com","phone":"12345678901"},"product":{"model":"M","serialNumber":"SNWAR-LOG-1775675124816","imei":"I1","productId":"P1"},"warranty":{"startDate":"2026-04-01","endDate":"2027-04-01","planType":"STANDARD"}}

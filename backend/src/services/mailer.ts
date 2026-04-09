@@ -22,12 +22,14 @@ export async function sendOtpEmail(to: string, otp: string) {
     });
     return;
   }
-  await resend.emails.send({
+  console.log('[TEMP][OTP] Before resend call', { email: to });
+  const resendResponse = await resend.emails.send({
     from: 'onboarding@resend.dev',
     to,
     subject: 'Your OTP Code',
     html: `<h2>Your OTP is: ${otp}</h2>`,
   });
+  console.log('[TEMP][OTP] After resend call', { response: resendResponse });
 }
 
 export async function sendCertificateEmail(params: {

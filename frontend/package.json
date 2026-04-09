@@ -1,0 +1,8 @@
+{
+  "name": "sealed-portal",
+  "private": true,
+  "description": "Static Sealed Portal (OTP UI) for Netlify",
+  "scripts": {
+    "build": "node scripts/build.cjs"
+  }
+}

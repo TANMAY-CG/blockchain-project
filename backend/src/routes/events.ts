@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { IngestWarrantyEventSchema } from '../schemas/events';
 import { WarrantyVersion } from '../models/WarrantyVersion';
 import { normalizeEmail, normalizeSerial } from '../utils/normalize';
@@ -51,6 +51,7 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
   let txHash: string | undefined;
   let onChainStatus: 'PENDING' | 'ANCHORED' | 'FAILED' = 'PENDING';
   try {
+    console.log("ANCHOR START", payload.warrantyId, new Date().toISOString());
     const anchor = await anchorOnChain({
       warrantyRootId: payload.warrantyRootId,
       versionNo: payload.versionNo,
@@ -87,8 +88,10 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
     onChainTxHash: txHash,
     onChainStatus,
   });
+  console.log("AFTER DB CREATE", payload.warrantyId, new Date().toISOString());
 
   try {
+    console.log("BEFORE CERTIFICATE GENERATION", payload.warrantyId, new Date().toISOString());
     const certPath = await generateWarrantyCertificate({
       customerName: payload.customer.name,
       email: payload.customer.email,
@@ -98,9 +101,11 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
       payloadHash: hash,
       txHash,
     });
+    console.log("AFTER CERTIFICATE GENERATION", payload.warrantyId, certPath, new Date().toISOString());
     doc.certificatePath = certPath;
     await doc.save();
 
+    console.log("BEFORE EMAIL SEND", payload.warrantyId, new Date().toISOString());
     await sendCertificateEmail({
       to: payload.customer.email,
       customerName: payload.customer.name,
@@ -110,6 +115,7 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
       txHash,
       certificatePath: certPath,
     });
+    console.log("AFTER EMAIL SEND", payload.warrantyId, new Date().toISOString());
   } catch (error) {
     await logProblem({
       where: 'events:warranty',
@@ -119,15 +125,10 @@ eventsRouter.post('/warranty', async (req: Request, res: Response) => {
     });
   }
 
-  return res.status(201).json({
-    ok: true,
-    eventId: randomBytes(8).toString('hex'),
-    warrantyId: payload.warrantyId,
-    warrantyRootId: payload.warrantyRootId,
-    versionNo: payload.versionNo,
-    payloadHash: hash,
-    onChainStatus,
-    txHash,
-  });
+  console.log("BEFORE FINAL 201", payload.warrantyId, new Date().toISOString());
+  const flushBody = JSON.stringify({ ok: true });
+  res.setHeader('Connection', 'close');
+  res.setHeader('Content-Length', Buffer.byteLength(flushBody));
+  res.status(201).end(flushBody);
 });
 

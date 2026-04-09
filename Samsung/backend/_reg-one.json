@@ -1,0 +1,27 @@
+{
+  "customer": {
+    "name": "Real Reg Test",
+    "phone": "12345678901",
+    "email": "astracorporations71@gmail.com"
+  },
+  "product": {
+    "productId": "P-REAL-1775679106996",
+    "model": "Galaxy Test",
+    "serialNumber": "SNREAL1775679106996",
+    "imei": "IMEI1775679106996"
+  },
+  "purchase": {
+    "proofOfPurchase": {
+      "fileName": "receipt.pdf",
+      "url": "https://example.com/proof.pdf",
+      "mimeType": "application/pdf",
+      "size": 1024
+    }
+  },
+  "warranty": {
+    "purchaseDate": "2026-04-01",
+    "startDate": "2026-04-01",
+    "endDate": "2027-04-01",
+    "planType": "STANDARD"
+  }
+}
