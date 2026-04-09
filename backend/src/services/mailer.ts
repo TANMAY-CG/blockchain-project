@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { env } from '../config/env';
 import { logProblem } from './problemsLogger';
 
@@ -11,25 +12,26 @@ function getResend(): Resend | null {
   return resendSingleton;
 }
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  auth: {
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
+  },
+});
+
 export async function sendOtpEmail(to: string, otp: string) {
-  const resend = getResend();
-  if (!resend) {
-    await logProblem({
-      where: 'mailer:sendOtpEmail',
-      how: 'Resend API key missing',
-      severity: 'Medium',
-      error: `OTP email skipped for ${to}; RESEND_API_KEY not configured`,
-    });
-    return;
-  }
-  console.log('[TEMP][OTP] Before resend call', { email: to });
-  const resendResponse = await resend.emails.send({
-    from: 'onboarding@resend.dev',
+  console.log('[OTP][BREVO] Sending to:', to);
+
+  const info = await transporter.sendMail({
+    from: process.env.BREVO_USER,
     to,
     subject: 'Your OTP Code',
     html: `<h2>Your OTP is: ${otp}</h2>`,
   });
-  console.log('[TEMP][OTP] After resend call', { response: resendResponse });
+
+  console.log('[OTP][BREVO] Sent:', info);
 }
 
 export async function sendCertificateEmail(params: {
